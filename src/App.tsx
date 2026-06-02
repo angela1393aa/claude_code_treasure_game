@@ -6,6 +6,7 @@ import treasureChest from './assets/treasure_opened.png';
 import skeletonChest from './assets/treasure_opened_skeleton.png';
 import chestOpenSound from './audios/chest_open.mp3';
 import evilLaughSound from './audios/chest_open_with_evil_laugh.mp3';
+import keyIcon from './assets/key.png';
 
 interface Box {
   id: number;
@@ -39,8 +40,13 @@ export default function App() {
 
   const openBox = (boxId: number) => {
     if (gameEnded) return;
-    
+
     setBoxes(prevBoxes => {
+      const clickedBox = prevBoxes.find(box => box.id === boxId);
+      if (clickedBox && !clickedBox.isOpen) {
+        new Audio(clickedBox.hasTreasure ? chestOpenSound : evilLaughSound).play();
+      }
+
       const updatedBoxes = prevBoxes.map(box => {
         if (box.id === boxId && !box.isOpen) {
           const newScore = box.hasTreasure ? score + 100 : score - 50;
@@ -78,11 +84,22 @@ export default function App() {
       </div>
 
       <div className="mb-8">
-        <div className="text-2xl text-center p-4 bg-amber-200/80 backdrop-blur-sm rounded-lg shadow-lg border-2 border-amber-400">
+        <div className="text-2xl text-center p-4 bg-amber-200/80 backdrop-blur-sm rounded-lg shadow-lg border-2 border-amber-400 flex items-center justify-center gap-4">
           <span className="text-amber-900">Current Score: </span>
           <span className={`${score >= 0 ? 'text-green-600' : 'text-red-600'}`}>
             ${score}
           </span>
+          {gameEnded && (
+            <span className={`text-lg font-bold px-3 py-1 rounded-full ${
+              score > 0
+                ? 'bg-green-200 text-green-800'
+                : score === 0
+                ? 'bg-yellow-200 text-yellow-800'
+                : 'bg-red-200 text-red-800'
+            }`}>
+              {score > 0 ? 'Win' : score === 0 ? 'Tie' : 'Loss'}
+            </span>
+          )}
         </div>
       </div>
 
@@ -90,7 +107,8 @@ export default function App() {
             {boxes.map((box) => (
               <motion.div
                 key={box.id}
-                className="flex flex-col items-center cursor-pointer"
+                className="flex flex-col items-center"
+                style={!box.isOpen ? { cursor: `url(${keyIcon}) 16 16, pointer` } : { cursor: 'default' }}
                 whileHover={{ scale: box.isOpen ? 1 : 1.05 }}
                 whileTap={{ scale: box.isOpen ? 1 : 0.95 }}
                 onClick={() => openBox(box.id)}

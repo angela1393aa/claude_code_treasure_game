@@ -141,3 +141,10 @@ vite.config.ts.timestamp-*
 build/
 */.DS_Store
 .vercel/
+# VS Code 個人設定
+.vscode/*
+!.vscode/extensions.json
+
+# Claude AI 本地設定
+.claude/settings.local.json
+node_modules/
