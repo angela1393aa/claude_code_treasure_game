@@ -153,3 +153,4 @@ node_modules/
 server/treasure.db
 server/.env
 server/node_modules/
+.vercel
